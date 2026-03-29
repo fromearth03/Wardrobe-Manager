@@ -15,9 +15,11 @@ import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Properties;
 
 class App {
     private static final File APP_BASE_DIRECTORY = new File(System.getProperty("user.home"), "WardrobeManagerData");
+    private static final String DEFAULT_OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
     private static String conversationHistory = "";
     private static String latestGeminiAnswer = "";
      
@@ -206,8 +208,12 @@ class App {
                                     "]" +
                                     "}";
 
-                                String apiKey = "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";
-                                String apiUrl = "https://openrouter.ai/api/v1/chat/completions";
+                                String apiKey = resolveOpenRouterApiKey();
+                                if (apiKey == null || apiKey.isBlank()) {
+                                    outputArea.setText("OpenRouter API key is not configured. Set OPENROUTER_API_KEY (env or JVM property) or add it to ~/WardrobeManagerData/openrouter.properties.");
+                                    return null;
+                                }
+                                String apiUrl = resolveOpenRouterApiUrl();
 
                             URL url = java.net.URI.create(apiUrl).toURL();
                             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -521,6 +527,49 @@ class App {
         }
 
         return event.toString().trim();
+    }
+
+    private static String resolveOpenRouterApiKey() {
+        String fromRuntime = firstNonBlank(
+            System.getenv("OPENROUTER_API_KEY"),
+            System.getProperty("OPENROUTER_API_KEY")
+        );
+        if (fromRuntime != null) {
+            return fromRuntime;
+        }
+
+        File localConfigFile = new File(APP_BASE_DIRECTORY, "openrouter.properties");
+        if (!localConfigFile.exists()) {
+            return null;
+        }
+
+        Properties properties = new Properties();
+        try (FileInputStream input = new FileInputStream(localConfigFile)) {
+            properties.load(input);
+            return firstNonBlank(
+                properties.getProperty("OPENROUTER_API_KEY"),
+                properties.getProperty("openrouter.api.key")
+            );
+        } catch (Exception ignored) {
+            return null;
+        }
+    }
+
+    private static String resolveOpenRouterApiUrl() {
+        String configured = firstNonBlank(
+            System.getenv("OPENROUTER_API_URL"),
+            System.getProperty("OPENROUTER_API_URL")
+        );
+        return configured == null ? DEFAULT_OPENROUTER_URL : configured;
+    }
+
+    private static String firstNonBlank(String... values) {
+        for (String value : values) {
+            if (value != null && !value.trim().isEmpty()) {
+                return value.trim();
+            }
+        }
+        return null;
     }
 }
 

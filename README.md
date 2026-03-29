@@ -175,6 +175,39 @@ Because this is a plain Java Swing project (not Maven/Gradle in this folder), ea
 3. `mainpage.java` (opens after successful login)
 4. Visit each dashboard button/module.
 
+### OpenRouter API key setup (required for AI Styling)
+
+For security, never hardcode API keys in source files.
+
+Use **one** of these methods:
+
+1. Environment variable (recommended):
+
+```bash
+export OPENROUTER_API_KEY="your_openrouter_key_here"
+```
+
+2. JVM property:
+
+```bash
+java -DOPENROUTER_API_KEY="your_openrouter_key_here" ...
+```
+
+3. Local machine-only config file:
+
+- Create: `~/WardrobeManagerData/openrouter.properties`
+- Add:
+
+```properties
+OPENROUTER_API_KEY=your_openrouter_key_here
+```
+
+Optional custom endpoint:
+
+```bash
+export OPENROUTER_API_URL="https://openrouter.ai/api/v1/chat/completions"
+```
+
 ---
 
 ## 7) Full User Journey Example
@@ -216,12 +249,13 @@ Because this is a plain Java Swing project (not Maven/Gradle in this folder), ea
 - If AI API key is invalid/unavailable, styling requests will fail with API error.
 - If weather API cannot be reached, forecast context may be empty in AI prompt.
 - Run this project with the same user account/environment to access saved local data.
+- If a key was accidentally pushed to GitHub before, rotate/revoke it immediately in provider dashboard.
 
 ---
 
 ## 10) Suggested Future Improvements
 
-- Move API keys to environment variables (avoid hardcoding).
+- Keep secrets fully outside source control and automate local secret loading.
 - Add project build file (`pom.xml` or `build.gradle`) for reproducible builds.
 - Add automated tests for account, storage, and event parsing logic.
 - Add export/import backup for user wardrobe data.

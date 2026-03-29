@@ -1,0 +1,18 @@
+# Compiled Java artifacts
+*.class
+
+# IDE/workspace files
+.vscode/
+.idea/
+*.iml
+
+# OS files
+.DS_Store
+
+# Local secret files (never commit)
+openrouter.properties
+.env
+.env.*
+
+# Optional local data if someone stores it in repo folder
+WardrobeManagerData/
