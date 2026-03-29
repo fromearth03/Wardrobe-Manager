@@ -236,5 +236,3 @@ Because this is a plain Java Swing project (not Maven/Gradle in this folder), ea
 - UI styling helpers are embedded in each module file (rounded borders, custom panels, etc.).
 
 ---
-
-If you want, I can also generate a second `README_SHORT.md` (1-page quick start) for your submission/demo handoff.
