@@ -290,8 +290,8 @@ class OutfitUI extends JFrame {
 
         // To store image panels temporarily
         List<JPanel> imagePanels = new ArrayList<>();
-        int imageWidth = 300; // Width of each image panel
-        int imageHeight = 360; // Height of each image panel
+        int imageWidth = 340; // Width of each image panel
+        int imageHeight = 500; // Height of each image panel
         int hgap = 20; // Horizontal gap
         int vgap = 20; // Vertical gap
         int containerWidth = 1500; // Set a wider container for fullscreen layouts
@@ -304,18 +304,65 @@ class OutfitUI extends JFrame {
             JLabel imageLabel = new JLabel(new ImageIcon(scaledImage));
             imageLabel.setPreferredSize(new Dimension(300, 300));
 
+            JButton wornTodayButton = new JButton("Worn Today");
+            wornTodayButton.setPreferredSize(new Dimension(300, 44));
+            wornTodayButton.setBackground(new Color(74, 170, 96));
+            wornTodayButton.setForeground(Color.WHITE);
+            wornTodayButton.setFont(new Font("SansSerif", Font.BOLD, 16));
+            wornTodayButton.setFocusPainted(false);
+            wornTodayButton.setBorder(new WardrobeRoundedBorder(15, new Color(74, 170, 96)));
+
+            JButton moveToDonationButton = new JButton("Move to Donation");
+            moveToDonationButton.setPreferredSize(new Dimension(300, 44));
+            moveToDonationButton.setBackground(new Color(255, 167, 94));
+            moveToDonationButton.setForeground(Color.WHITE);
+            moveToDonationButton.setFont(new Font("SansSerif", Font.BOLD, 16));
+            moveToDonationButton.setFocusPainted(false);
+            moveToDonationButton.setBorder(new WardrobeRoundedBorder(15, new Color(255, 167, 94)));
+
             JButton deleteButton = new JButton("Delete");
-            deleteButton.setPreferredSize(new Dimension(180, 50));
+            deleteButton.setPreferredSize(new Dimension(300, 44));
             deleteButton.setBackground(new Color(255, 94, 94));
             deleteButton.setForeground(Color.WHITE);
+            deleteButton.setFont(new Font("SansSerif", Font.BOLD, 16));
             deleteButton.setFocusPainted(false);
             deleteButton.setBorder(new WardrobeRoundedBorder(15, new Color(255, 94, 94)));
+
+            JPanel actionPanel = new JPanel();
+            actionPanel.setLayout(new BoxLayout(actionPanel, BoxLayout.Y_AXIS));
+            actionPanel.setOpaque(false);
+            actionPanel.add(wornTodayButton);
+            actionPanel.add(Box.createVerticalStrut(6));
+            actionPanel.add(moveToDonationButton);
+            actionPanel.add(Box.createVerticalStrut(6));
+            actionPanel.add(deleteButton);
 
             JPanel imagePanel = new JPanel(new BorderLayout());
             imagePanel.setBackground(new Color(130, 90, 174));
             imagePanel.setPreferredSize(new Dimension(imageWidth, imageHeight));
             imagePanel.add(imageLabel, BorderLayout.CENTER);
-            imagePanel.add(deleteButton, BorderLayout.SOUTH);
+            imagePanel.add(actionPanel, BorderLayout.SOUTH);
+
+            wornTodayButton.addActionListener(e -> {
+                String id = getItemIdFromImageFile(file);
+                boolean updated = updateItemLastWornDate(category, id, LocalDate.now());
+                if (updated) {
+                    JOptionPane.showMessageDialog(imageContainer, "Marked as worn today.");
+                } else {
+                    JOptionPane.showMessageDialog(imageContainer, "Unable to update wear date.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            });
+
+            moveToDonationButton.addActionListener(e -> {
+                String id = getItemIdFromImageFile(file);
+                LocalDate donationEligibleDate = LocalDate.now().minusMonths(7);
+                boolean updated = updateItemLastWornDate(category, id, donationEligibleDate);
+                if (updated) {
+                    JOptionPane.showMessageDialog(imageContainer, "Item moved to donation eligibility. It will now appear in Donation tab.");
+                } else {
+                    JOptionPane.showMessageDialog(imageContainer, "Unable to update donation status.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            });
 
             // Delete action for image
             deleteButton.addActionListener(e -> {   
@@ -829,18 +876,65 @@ private JButton createAddButton(JPanel imageContainer, String category) {
                 JLabel imageLabel = new JLabel(new ImageIcon(scaledImage));
                 imageLabel.setPreferredSize(new Dimension(300, 300));
 
+                JButton wornTodayButton = new JButton("Worn Today");
+                wornTodayButton.setPreferredSize(new Dimension(300, 44));
+                wornTodayButton.setBackground(new Color(74, 170, 96));
+                wornTodayButton.setForeground(Color.WHITE);
+                wornTodayButton.setFont(new Font("SansSerif", Font.BOLD, 16));
+                wornTodayButton.setFocusPainted(false);
+                wornTodayButton.setBorder(new WardrobeRoundedBorder(15, new Color(74, 170, 96)));
+
+                JButton moveToDonationButton = new JButton("Move to Donation");
+                moveToDonationButton.setPreferredSize(new Dimension(300, 44));
+                moveToDonationButton.setBackground(new Color(255, 167, 94));
+                moveToDonationButton.setForeground(Color.WHITE);
+                moveToDonationButton.setFont(new Font("SansSerif", Font.BOLD, 16));
+                moveToDonationButton.setFocusPainted(false);
+                moveToDonationButton.setBorder(new WardrobeRoundedBorder(15, new Color(255, 167, 94)));
+
                 JButton deleteButton = new JButton("Delete");
-                deleteButton.setPreferredSize(new Dimension(180, 50));
+                deleteButton.setPreferredSize(new Dimension(300, 44));
                 deleteButton.setBackground(new Color(255, 94, 94));
                 deleteButton.setForeground(Color.WHITE);
+                deleteButton.setFont(new Font("SansSerif", Font.BOLD, 16));
                 deleteButton.setFocusPainted(false);
                 deleteButton.setBorder(new WardrobeRoundedBorder(15, new Color(255, 94, 94)));
 
+                JPanel actionPanel = new JPanel();
+                actionPanel.setLayout(new BoxLayout(actionPanel, BoxLayout.Y_AXIS));
+                actionPanel.setOpaque(false);
+                actionPanel.add(wornTodayButton);
+                actionPanel.add(Box.createVerticalStrut(6));
+                actionPanel.add(moveToDonationButton);
+                actionPanel.add(Box.createVerticalStrut(6));
+                actionPanel.add(deleteButton);
+
                 JPanel imagePanel = new JPanel(new BorderLayout());
                 imagePanel.setBackground(new Color(130, 90, 174));
-                imagePanel.setPreferredSize(new Dimension(300, 360));
+                imagePanel.setPreferredSize(new Dimension(340, 500));
                 imagePanel.add(imageLabel, BorderLayout.CENTER);
-                imagePanel.add(deleteButton, BorderLayout.SOUTH);
+                imagePanel.add(actionPanel, BorderLayout.SOUTH);
+
+                wornTodayButton.addActionListener(markWorn -> {
+                    String id = getItemIdFromImageFile(savedFile);
+                    boolean updated = updateItemLastWornDate(category, id, LocalDate.now());
+                    if (updated) {
+                        JOptionPane.showMessageDialog(imageContainer, "Marked as worn today.");
+                    } else {
+                        JOptionPane.showMessageDialog(imageContainer, "Unable to update wear date.", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                });
+
+                moveToDonationButton.addActionListener(markDonate -> {
+                    String id = getItemIdFromImageFile(savedFile);
+                    LocalDate donationEligibleDate = LocalDate.now().minusMonths(7);
+                    boolean updated = updateItemLastWornDate(category, id, donationEligibleDate);
+                    if (updated) {
+                        JOptionPane.showMessageDialog(imageContainer, "Item moved to donation eligibility. It will now appear in Donation tab.");
+                    } else {
+                        JOptionPane.showMessageDialog(imageContainer, "Unable to update donation status.", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                });
 
                 deleteButton.addActionListener(del -> {
                         String fileName = savedFile.getName();
@@ -930,6 +1024,70 @@ private JButton createAddButton(JPanel imageContainer, String category) {
         e.printStackTrace();
     }
 }
+
+    private String getItemIdFromImageFile(File imageFile) {
+        String fileName = imageFile.getName();
+        int extensionIndex = fileName.lastIndexOf('.');
+        return extensionIndex >= 0 ? fileName.substring(0, extensionIndex) : fileName;
+    }
+
+    private boolean updateItemLastWornDate(String category, String itemId, LocalDate newDate) {
+        File textFile = wardrobe.getCategoryTextFile(wardrobe.storedArgs[0], category);
+        if (!textFile.exists()) {
+            return false;
+        }
+
+        List<String> lines = new ArrayList<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader(textFile))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                lines.add(line);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        List<String> updatedLines = new ArrayList<>();
+        boolean inTargetItem = false;
+        boolean updated = false;
+        String idLine = "ID: " + itemId;
+        String newLastWornLine = "Last Worn: " + newDate;
+
+        for (String line : lines) {
+            if (line.startsWith("ID: ")) {
+                inTargetItem = line.equals(idLine);
+            }
+
+            if (inTargetItem && line.startsWith("Last Worn: ")) {
+                updatedLines.add(newLastWornLine);
+                updated = true;
+                continue;
+            }
+
+            updatedLines.add(line);
+
+            if (inTargetItem && line.trim().equals("End")) {
+                inTargetItem = false;
+            }
+        }
+
+        if (!updated) {
+            return false;
+        }
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(textFile))) {
+            for (String updatedLine : updatedLines) {
+                writer.write(updatedLine);
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        return true;
+    }
 
 
     private Image getHighQualityScaledImage(BufferedImage originalImage, int width, int height) {

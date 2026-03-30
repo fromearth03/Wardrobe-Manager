@@ -17,6 +17,7 @@ public class AvatarApp {
 
     public static void main(String[] args) {
         storedArgs = args;
+        resetAvatarState();
         // Build user avatar directory
         File appRootDir = new File(System.getProperty("user.home"), "WardrobeManagerData");
         File avatarDir = new File(new File(appRootDir, storedArgs[0]), "Avatars");
@@ -25,12 +26,18 @@ public class AvatarApp {
             avatarDir.mkdirs();
         }
 
+        // Load custom outfit paths first (from outfits.txt in Avatars directory)
+        loadCustomOutfits(avatarDirPath);
+
         // Load default outfits (from Avatars directory)
         File[] files = avatarDir.listFiles((dir, name) -> name.toLowerCase().endsWith(".png") || name.toLowerCase().endsWith(".jpg") || name.toLowerCase().endsWith(".jpeg"));
         ArrayList<String> defaultOutfits = new ArrayList<>();
         if (files != null) {
             for (File f : files) {
-                defaultOutfits.add(f.getAbsolutePath());
+                String path = f.getAbsolutePath();
+                if (!customOutfitPaths.contains(path)) {
+                    defaultOutfits.add(path);
+                }
             }
         }
 
@@ -38,8 +45,12 @@ public class AvatarApp {
             outfitImages.add(new ImageIcon(path));
         }
 
-        // Load saved custom outfits (from outfits.txt in Avatars directory)
-        loadCustomOutfits(avatarDirPath);
+        for (String path : customOutfitPaths) {
+            File file = new File(path);
+            if (file.exists()) {
+                outfitImages.add(new ImageIcon(path));
+            }
+        }
 
         JFrame frame = new JFrame("Avatar Customization");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -239,10 +250,9 @@ public class AvatarApp {
             try (Scanner scanner = new Scanner(saveFile)) {
                 while (scanner.hasNextLine()) {
                     String path = scanner.nextLine().trim();
-                    if (!path.isEmpty()) {
+                    if (!path.isEmpty() && !customOutfitPaths.contains(path)) {
                         File file = new File(path);
                         if (file.exists()) {
-                            outfitImages.add(new ImageIcon(path));
                             customOutfitPaths.add(path);
                         }
                     }
@@ -262,6 +272,12 @@ public class AvatarApp {
         } catch (IOException e) {
             System.err.println("Error saving avatars: " + e.getMessage());
         }
+    }
+
+    private static void resetAvatarState() {
+        outfitIndex = 0;
+        outfitImages.clear();
+        customOutfitPaths.clear();
     }
 }
 

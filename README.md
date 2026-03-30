@@ -249,7 +249,7 @@ export OPENROUTER_API_URL="https://openrouter.ai/api/v1/chat/completions"
 - If AI API key is invalid/unavailable, styling requests will fail with API error.
 - If weather API cannot be reached, forecast context may be empty in AI prompt.
 - Run this project with the same user account/environment to access saved local data.
-- If a key was accidentally pushed to GitHub before, rotate/revoke it immediately in provider dashboard.
+
 
 ---
 
